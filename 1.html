@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+	<html lang="en">
+<head>
+
+	<meta content="text/html;charset=utf-­‐8"	 http-­equiv="Content-­‐Type">
+	<meta content="utf-­‐8" http-­equiv="encoding">
+
+</head>
+<body>
+
+
+
+</br>
+
+<canvas id="gameCanvas" width="800" height="600"> </canvas>
+
+
+<script >
+
+
+var ballX = 75; var ballY = 75;
+var BallSpeedX = 2;
+var BallSpeedY = 2;
+var canvas;
+var canvasContext;
+
+
+var score1 = 0;
+var score2 = 0;
+
+var paddleY = 400;
+var paddle2Y = 200;
+
+const PADDLE_HEIGHT = 100;
+const PADDLE_THICKNESS = 10;
+
+const PADDLE2_HEIGHT = 100;
+const PADDLE2_THICKNESS = 10;
+
+function updateMousePos(evt) {
+	var rect = canvas.getBoundingClientRect();
+	var root = document.documentElement;
+
+
+	var mouseY = evt.clientY - rect.top - root.scrollTop;
+
+	paddleY = mouseY;
+
+}
+
+window.onload = function() {
+
+
+	canvas = document.getElementById("gameCanvas");
+	canvasContext = canvas.getContext("2d");
+	var FPS = 30;
+	var compDirection = 10;
+	setInterval(function() {
+	compDirection = computerAI(compDirection);
+	MoveAll();
+	drawRectangle();
+	drawCircle();
+	drawRaketka();
+	drawRaketka2();
+	calculateMousePos();
+	mousemove();
+	paddle_power();
+
+}, 1000/FPS);
+
+	canvas.addEventListener('mousemove', updateMousePos);
+
+
+
+
+}
+
+function MoveAll() {
+
+
+
+  ballX += BallSpeedX;
+	ballY += BallSpeedY;
+
+	if(ballX > canvas.width) {
+
+		BallSpeedX *= -2;
+
+	}
+
+	ballX += BallSpeedX;
+
+	if(ballX < 0) {
+
+		BallSpeedX = 2;
+
+	}
+
+	if(ballY > canvas.height) {
+
+		BallSpeedY *= -2;
+
+	}
+
+	ballY += BallSpeedY;
+
+	if(ballY < 0) {
+
+		BallSpeedY = 2;
+
+	}
+
+}
+
+function drawRectangle() {
+
+    canvasContext.fillStyle = "black";
+	canvasContext.fillRect(0,0, canvas.width,canvas.height);
+
+
+
+
+
+}
+
+function drawRaketka() {
+
+	canvasContext.fillStyle = "white";
+	canvasContext.fillRect(2,paddleY, PADDLE_THICKNESS,PADDLE_HEIGHT);
+
+}
+
+function drawRaketka2() {
+
+	canvasContext.fillStyle = "white";
+	canvasContext.fillRect(788,paddle2Y, PADDLE2_THICKNESS,PADDLE2_HEIGHT);
+
+}
+
+function paddle_power() {
+    var rightedge = canvas.height - Paddle_dist_from_edge;
+
+    var leftedge = rightedge + PADDLE_THICKNESS;
+
+    var padletopedge = paddleY;
+
+    var padlebottomedge = padletopedge + PADDLE_HEIGHT;
+
+    if(ballX<rightedge && ballX>leftedge && ballY<padletopedge && ballY>padlebottomedge){
+
+        BallSpeedX *= -1;
+
+        var CenterOfPaddle = paddleY + PADDLE_HEIGHT/2;
+        var DistanceFromPaddleCenter = ballX - CenterOfPaddle;
+        BallSpeedX = DistanceFromPaddleCenter * 0.35;
+    }
+
+
+
+}
+
+function drawCircle() {
+
+  canvasContext.fillStyle	=	'white';
+
+  canvasContext.beginPath();
+
+  canvasContext.arc(ballX,ballY, 10, 0,	Math.PI*2,	true);
+
+  canvasContext.fill();
+
+		if(ballX < 10) {
+
+			if(ballY > paddleY && ballY < paddleY + PADDLE_HEIGHT && ballX <= paddleY + PADDLE_THICKNESS) {
+
+					BallSpeedX *= -1;
+
+			} else  {
+
+				ballReset();
+                Sciotcik();
+    }
+
+			}
+			if(ballX > 790) {
+
+			if(ballY > paddle2Y && ballY < paddle2Y + PADDLE2_HEIGHT) {
+
+					BallSpeedX *= 1;
+
+			}else {
+
+				ballReset();
+                Sciotcik();
+			}
+
+		}
+
+
+}
+
+function ballReset(){
+
+
+
+    ballX = 200;
+	ballY = 200;
+
+    console.log(score1);
+
+
+}
+
+function Sciotcik(){
+
+    score1++;
+    var sciot = document.getElementById("scoretable")
+    sciot.innerHTML = score1;
+
+
+}
+
+function computerAI(paddleSpeed) {
+
+    const Paddle2Center = PADDLE2_HEIGHT/2;
+
+	 if (paddle2Y != ballY)
+		paddleSpeed = paddleSpeed * 1;
+	 	else {
+	 		paddleSpeed = paddleSpeed * -1;
+		}
+
+	if (paddle2Y + PADDLE2_HEIGHT >= ballY || paddle2Y <= 0)
+			paddleSpeed = paddleSpeed * -1;
+
+
+		paddle2Y += paddleSpeed;
+		console.log(paddle2Y);
+		return paddleSpeed;
+}
+
+
+
+
+</script>
+
+<p id="scoretable">
+
+0
+
+</p>
+<p id="scoretable2">
+
+0
+
+</p>
+</body>
+</html>
